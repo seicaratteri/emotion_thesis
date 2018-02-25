@@ -31,7 +31,7 @@ model = tflearn.DNN(network, checkpoint_path='check/',
 
 #model.load("model.tfl")
 
-model.fit(X, Y, n_epoch=50, validation_set=0.15, shuffle=True,
+model.fit(X, Y, n_epoch=80, validation_set=0.15, shuffle=True,
           show_metric=True, batch_size=100,
           snapshot_epoch=True, run_id='test')
 
