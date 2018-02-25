@@ -1,4 +1,5 @@
 import h5py
+import os
 import cv2
 import tensorflow as tf
 import numpy as np
@@ -21,7 +22,7 @@ def format_image(image):
 
 	faces = cascade_classifier.detectMultiScale(image,scaleFactor = 1.3,minNeighbors = 5)
 
-	# None is we don't found an image
+	# None is we don't found any face - try to give back the whole picture anyway, but probably won't work welll
 	if not len(faces) > 0:
 		return cv2.resize(image, (48, 48), interpolation = cv2.INTER_CUBIC) / 255.
 		#return None
@@ -35,8 +36,7 @@ def format_image(image):
 	# Resize image to network size
 	try:
 		image = cv2.resize(image, (48, 48), interpolation = cv2.INTER_CUBIC) / 255.
-	except Exception:
-		print("[+] Problem during resize")
+	except Exception: # Problem during resize
 		return None
 	
 	return image
@@ -55,17 +55,18 @@ network = fully_connected(network, 7, activation='softmax')
 model = tflearn.DNN(network)
 model.load("model.tfl")
 
-img = cv2.imread("./testimage/sad1.png")
-result = model.predict(format_image(img).reshape(1,48,48,1))
+o = open("test_80epoch.txt","w")
 
-print("\n")
-labels = ["Angry","Disgust","Fear","Happy","Sad","Surprise","Neutral"]
-dic = {}
-for i in range(0,7):
-	dic[labels[i]] = result[0][i]
+for f in os.listdir("./testimage/"):
+	img = cv2.imread("./testimage/"+f)
+	result = model.predict(format_image(img).reshape(1,48,48,1))
 
-sorted_dic = sorted(dic.items(), key=lambda kv: kv[1], reverse=True)
-print(sorted_dic)
-print("\n")
-#print(result)
-#print("(" + labels[result[0][0]] + ")")
+	labels = ["Angry","Disgust","Fear","Happy","Sad","Surprise","Neutral"]
+	dic = {}
+	for i in range(0,7):
+		dic[labels[i]] = result[0][i]
+
+	sorted_dic = sorted(dic.items(), key=lambda kv: kv[1], reverse=True)
+	o.write(f + ":\n" + str(sorted_dic) + "\n_____________\n")
+
+o.close()
