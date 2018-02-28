@@ -10,6 +10,10 @@ from tflearn.layers.normalization import local_response_normalization
 from tflearn.layers.estimator import regression
 from tflearn.data_augmentation import ImageAugmentation
 
+from PIL import Image
+from PIL import ImageFont
+from PIL import ImageDraw 
+
 class Network:
 	def Define():
 		img_aug = ImageAugmentation()
@@ -77,6 +81,33 @@ class Network:
 			o.write(f + ":\n" + str(sorted_dic) + "\n_____________\n")
 
 		o.close()
+	
+	def TestBulk(model_name,test_dir,cascade_file,out_dir):
+		cascade_classifier = cv2.CascadeClassifier(cascade_file)
+
+		network = Network.Define()
+		model = tflearn.DNN(network)
+		model.load(model_name)
+
+		for f in os.listdir(test_dir):
+			img = cv2.imread(test_dir+'/'+f)
+			print(test_dir+'/'+f)
+			result = model.predict(Network._FormatImage(img,cascade_classifier).reshape(1,48,48,1))
+
+			labels = ["Angry","Disgust","Fear","Happy","Sad","Surprise","Neutral"]
+			dic = {}
+			for i in range(0,7):
+				dic[labels[i]] = result[0][i]
+
+			sorted_dic = sorted(dic.items(), key=lambda kv: kv[1], reverse=True)
+			
+			img = Image.open(test_dir+'/'+f)
+			draw = ImageDraw.Draw(img)
+			font = ImageFont.truetype("./Utils/micross.ttf", 16)
+			draw.text((0, 0),str(sorted_dic),(255,255,255),font=font)
+			draw.text((0, 30),str(sorted_dic),(0,0,0),font=font)
+			img.save(out_dir+'/'+f)
+
 
 	def _FormatImage(image,cascade_classifier):
 		if len(image.shape) > 2 and image.shape[2] == 3:
@@ -106,4 +137,5 @@ class Network:
 		return image
 
 #Network.Train("./dataset/dataset.h5","./Model/model.tfl","nome_run",False,"./TFBoard/")
-#Network.Test("./TestResults/testtesttest.txt","./Model/model.tfl","./TestImages/","./Utils/h.xml")
+#Network.Test("./TestResults/random.txt","./Model/model.tfl","./TestImages/","./Utils/h.xml")
+#Network.TestBulk("./Model/model.tfl","./BulkTest/Input","./Utils/h.xml","./BulkTest/Results")
