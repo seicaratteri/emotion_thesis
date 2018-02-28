@@ -29,7 +29,7 @@ network = dropout(network,0.3)
 network = fully_connected(network, 3072, activation='tanh')
 network = fully_connected(network, 7, activation='softmax')
 network = regression(network, optimizer='momentum',
-                     loss='categorical_crossentropy')   
+                     loss='categorical_crossentropy',learning_rate=0.000001)   
 
 # Training
 model = tflearn.DNN(network, checkpoint_path='check/',
@@ -37,7 +37,7 @@ model = tflearn.DNN(network, checkpoint_path='check/',
 
 model.load("model.tfl")
 
-model.fit(X, Y, n_epoch=30, validation_set=0.15, shuffle=True,
+model.fit(X, Y, n_epoch=25, validation_set=0.15, shuffle=True,
           show_metric=True, batch_size=100,
           snapshot_epoch=True, run_id='test_augmentation')
 

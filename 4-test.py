@@ -55,7 +55,7 @@ network = fully_connected(network, 7, activation='softmax')
 model = tflearn.DNN(network)
 model.load("model.tfl")
 
-o = open("test_110epoch_aug.txt","w")
+o = open("test_140epoch_aug.txt","w")
 
 for f in os.listdir("./testimage/"):
 	img = cv2.imread("./testimage/"+f)
