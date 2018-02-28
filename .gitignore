@@ -1,5 +1,5 @@
 *.csv
 *.h5
-dataset/
-tfboard/
+Dataset/
+TFBoard/
 
