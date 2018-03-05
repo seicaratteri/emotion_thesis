@@ -144,5 +144,5 @@ class Network:
 		return image
 
 #Network.Train("./dataset/dataset.h5","./Model/model.tfl","nome_run",False,"./TFBoard/")
-Network.Test("./Tests/TestResults/random.txt","./Model/model.tfl","./Tests/TestImages/","./Utils/h.xml")
+Network.Test("./Tests/TestResults/augmented.txt","./Model/model.tfl","./Tests/TestImages/","./Utils/h.xml")
 #Network.TestBulk("./Model/model.tfl","./BulkTest/Input","./Utils/h.xml","./BulkTest/Results")
