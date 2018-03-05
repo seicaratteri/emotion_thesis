@@ -67,8 +67,10 @@ class Network:
 		model.load(model_name)
 		
 		o = open(output,"a")
+		c = 0
+		l = os.listdir(test_dir)
 
-		for f in os.listdir(test_dir):
+		for f in l:
 			img = cv2.imread(test_dir+'/'+f)
 			result = model.predict(Network._FormatImage(img,cascade_classifier).reshape(1,48,48,1))
 
@@ -78,8 +80,13 @@ class Network:
 				dic[labels[i]] = result[0][i]
 
 			sorted_dic = sorted(dic.items(), key=lambda kv: kv[1], reverse=True)
-			o.write(f + ":\n" + str(sorted_dic) + "\n_____________\n")
+			first = (sorted_dic[0][0]).lower()
+			if (first in f):
+				c+=1
 
+			o.write(f + ":\n" + str(sorted_dic) + "\n_____________\n")
+	
+		o.write("\n-- Total right: " + str(c) + " over " + str(len(l)))
 		o.close()
 	
 	def TestBulk(model_name,test_dir,cascade_file,out_dir):
@@ -137,5 +144,5 @@ class Network:
 		return image
 
 #Network.Train("./dataset/dataset.h5","./Model/model.tfl","nome_run",False,"./TFBoard/")
-#Network.Test("./TestResults/random.txt","./Model/model.tfl","./TestImages/","./Utils/h.xml")
+Network.Test("./Tests/TestResults/random.txt","./Model/model.tfl","./Tests/TestImages/","./Utils/h.xml")
 #Network.TestBulk("./Model/model.tfl","./BulkTest/Input","./Utils/h.xml","./BulkTest/Results")
